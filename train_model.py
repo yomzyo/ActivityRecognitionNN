@@ -1,43 +1,45 @@
 import numpy as np
 from time import time
-import os
 from keras.callbacks import TensorBoard
 from models import ThreeLayerLSTM
+import os
+from DataGenerator import DataGenerator
 
 EPOCHS = 100            # TODO
 # NUM_CLASSES = 15
-BATCH_SIZE = 128        # TODO
-# CHUNK_SIZE = 28
+dataset_folder = 'Dataset_Separation/UCF-101json'
+
+
+partition = {}
+labels = {}
+label_ids = {}
+for type in os.listdir(dataset_folder):
+    partition[type] = []
+    for i, activity in enumerate(os.listdir(dataset_folder + '/' + type)):
+        label_ids[activity] = i
+        for video in os.listdir(dataset_folder + '/' + type + '/' + activity):
+            partition[type].append(video)
+            labels[video] = activity
+
 
 ThreeLayerLSTM = ThreeLayerLSTM()
 model = ThreeLayerLSTM.build_network()
 
-x_data = np.load('training_data-1.npy')
-y_data = np.load('training_data_labels-1.npy')
-
-
-def _unison_shuffled_copies(a, b):
-    assert len(a) == len(b)
-    p = np.random.permutation(len(a))
-    return a[p], b[p]
-
-
-x_data, y_data = _unison_shuffled_copies(x_data, y_data)
 
 # Generate training data from .npy file
-x_train = x_data[0:1000]
-y_train = y_data[0:1000]
+training_generator = DataGenerator(partition['train'], labels, label_ids)
 # Generate validation data from .npy file
-x_validate = x_data[1000:1106]
-y_validate = y_data[1000:1106]
+val_generator = DataGenerator(partition['validation'], labels, label_ids)
+
 # Training
 
 tensorboard = TensorBoard(
                     log_dir='logs/{}'.format(time()),
-                    histogram_freq=1,
+                    histogram_freq=0,
                     write_graph=True,
                     write_images=True)
 
-model.fit(x_train, y_train, batch_size=1000, epochs=EPOCHS,
-          shuffle=False, validation_data=(x_validate, y_validate),
-          callbacks=[tensorboard])
+model.fit_generator(generator=training_generator,
+                    validation_data=val_generator,
+                    epochs=10,
+                    callbacks=[tensorboard])

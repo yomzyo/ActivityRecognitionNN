@@ -6,9 +6,9 @@ import time
 
 class ThreeLayerLSTM():
     def __init__(self):
-        self.L1 = 128
-        self.L2 = 128
-        self.L3 = 128
+        self.L1 = 500
+        self.L2 = 500
+        self.L3 = 500
 
         self.data_dim = 18
         self.t = 1000

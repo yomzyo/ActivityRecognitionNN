@@ -44,8 +44,8 @@ class DataGenerator(keras.utils.Sequence):
 # Input is list of videos
     def __data_generation(self, list_videos_temp):
         # Initialization
-        X = np.empty((self.batch_size, *self.dim))
-        y = np.empty((self.batch_size), dtype=int)
+        X = np.zeros((self.batch_size, *self.dim))
+        y = np.zeros((self.batch_size), dtype=int)
         # Generate data
         for i, video in enumerate(list_videos_temp):
             # Store sample

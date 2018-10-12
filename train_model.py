@@ -3,9 +3,9 @@ from time import time
 from keras.callbacks import TensorBoard
 from models import ThreeLayerLSTM
 import os
-from DataGenerator import DataGenerator
+from DataGenerator import DataGenerator18, DataGenerator36
 
-EPOCHS = 100            # TODO
+EPOCHS = 10
 # NUM_CLASSES = 15
 dataset_folder = 'Dataset_Separation/UCF-101json'
 
@@ -22,14 +22,15 @@ for type in os.listdir(dataset_folder):
             labels[video] = activity
 
 
-ThreeLayerLSTM = ThreeLayerLSTM()
+ThreeLayerLSTM = ThreeLayerLSTM(L1=64, L2=64, L3=64, t=1000,
+                                num_classes=8, data_dim=36)
 model = ThreeLayerLSTM.build_network()
 
 
 # Generate training data from .npy file
-training_generator = DataGenerator(partition['train'], labels, label_ids)
+training_generator = DataGenerator36(partition['train'], labels, label_ids)
 # Generate validation data from .npy file
-val_generator = DataGenerator(partition['validation'], labels, label_ids)
+val_generator = DataGenerator36(partition['validation'], labels, label_ids)
 
 # Training
 
@@ -41,5 +42,5 @@ tensorboard = TensorBoard(
 
 model.fit_generator(generator=training_generator,
                     validation_data=val_generator,
-                    epochs=10,
+                    epochs=EPOCHS,
                     callbacks=[tensorboard])

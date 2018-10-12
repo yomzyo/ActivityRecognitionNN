@@ -44,3 +44,5 @@ model.fit_generator(generator=training_generator,
                     validation_data=val_generator,
                     epochs=EPOCHS,
                     callbacks=[tensorboard])
+
+model.save('trained_model.h5')

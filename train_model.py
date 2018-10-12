@@ -43,6 +43,8 @@ tensorboard = TensorBoard(
 model.fit_generator(generator=training_generator,
                     validation_data=val_generator,
                     epochs=EPOCHS,
-                    callbacks=[tensorboard])
+                    callbacks=[tensorboard],
+                    use_multiprocessing=True,
+                    workers=1)
 
 model.save('trained_model.h5')

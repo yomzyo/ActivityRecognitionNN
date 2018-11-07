@@ -28,4 +28,5 @@ class data_org():
     def _generate_label_ids(self):
         label_ids_df = pd.read_csv("Dataset_Separation/" + self.dataset
                                    + "/labeled_list_decodings.csv")
-        self.label_ids = label_ids_df.set_index('action').T.to_dict('records')[0]
+        self.label_ids =\
+            label_ids_df.set_index('action').T.to_dict('records')[0]

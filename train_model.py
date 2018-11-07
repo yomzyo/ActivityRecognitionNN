@@ -1,50 +1,137 @@
 import numpy as np
-from time import time
+import datetime
 from keras.callbacks import TensorBoard
-from models import ThreeLayerLSTM
-import os
-from DataGenerator import DataGenerator18, DataGenerator36
+from models import ThreeLayerLSTM, ThreeLayerLSTMandCNN
+from DataGenerator import DataGenerator36, DataGenerator18, DataGenerator36CNN
+from data_org import data_org
 
 EPOCHS = 10
-# NUM_CLASSES = 15
-dataset_folder = 'Dataset_Separation/UCF-101json'
+NUM_CLASSES = 10
+BATCH_SIZE = 1
+TIMESTEP = 30
+DATASET = 'ntu_rgbd_dataset'
+MODEL = '36IN3LSTMCNN'
+L1 = 10
+L2 = 10
+L3 = 10
+WORKERS = 1
+IMG_HEIGHT = 540
+IMG_WIDTH = 960
+
+data_org = data_org(dataset=DATASET)
+
+if MODEL == '36IN3LSTMCNN':
+    ThreeLayerLSTM = ThreeLayerLSTMandCNN(L1=L1, L2=L2, L3=L3, t=TIMESTEP,
+                                          num_classes=NUM_CLASSES, data_dim=36,
+                                          imgHeight=IMG_HEIGHT,
+                                          imgWidth=IMG_WIDTH)
+    model = ThreeLayerLSTM.build_network()
+
+    # Generate training data from .npy file
+    training_generator = DataGenerator36CNN(data_org.partition['Training'],
+                                            data_org.labels,
+                                            data_org.label_ids,
+                                            batch_size=BATCH_SIZE, t=TIMESTEP,
+                                            n_classes=NUM_CLASSES,
+                                            imgHeight=IMG_HEIGHT,
+                                            imgWidth=IMG_WIDTH)
+
+    # Generate validation data from .npy file
+    val_generator = DataGenerator36CNN(data_org.partition['Validation'],
+                                       data_org.labels, data_org.label_ids,
+                                       batch_size=BATCH_SIZE, t=TIMESTEP,
+                                       n_classes=NUM_CLASSES,
+                                       imgHeight=IMG_HEIGHT,
+                                       imgWidth=IMG_WIDTH)
+
+    # Training
+
+    tensorboard = TensorBoard(
+                        log_dir='logs/{}'.format(datetime.datetime.now()),
+                        histogram_freq=0,
+                        write_graph=True,
+                        write_images=True)
+
+    model.fit_generator(generator=training_generator,
+                        validation_data=val_generator,
+                        epochs=EPOCHS,
+                        callbacks=[tensorboard],
+                        use_multiprocessing=False,
+                        workers=WORKERS)
+
+    model.save('trained_models/{}_model_{}_final.h5'.format(
+                                                    MODEL,
+                                                    datetime.datetime.now()))
 
 
-partition = {}
-labels = {}
-label_ids = {}
-for type in os.listdir(dataset_folder):
-    partition[type] = []
-    for i, activity in enumerate(os.listdir(dataset_folder + '/' + type)):
-        label_ids[activity] = i
-        for video in os.listdir(dataset_folder + '/' + type + '/' + activity):
-            partition[type].append(video)
-            labels[video] = activity
+if MODEL == '36IN3LSTM':
+    ThreeLayerLSTM = ThreeLayerLSTM(L1=L1, L2=L2, L3=L3, t=TIMESTEP,
+                                    num_classes=NUM_CLASSES, data_dim=36)
+    model = ThreeLayerLSTM.build_network()
 
+    # Generate training data from .npy file
+    training_generator = DataGenerator36(data_org.partition['Training'],
+                                         data_org.labels, data_org.label_ids,
+                                         batch_size=BATCH_SIZE, t=TIMESTEP,
+                                         n_classes=NUM_CLASSES)
 
-ThreeLayerLSTM = ThreeLayerLSTM(L1=64, L2=64, L3=64, t=1000,
-                                num_classes=8, data_dim=36)
-model = ThreeLayerLSTM.build_network()
+    # Generate validation data from .npy file
+    val_generator = DataGenerator36(data_org.partition['Validation'],
+                                    data_org.labels, data_org.label_ids,
+                                    batch_size=BATCH_SIZE, t=TIMESTEP,
+                                    n_classes=NUM_CLASSES)
 
+    # Training
 
-# Generate training data from .npy file
-training_generator = DataGenerator36(partition['train'], labels, label_ids)
-# Generate validation data from .npy file
-val_generator = DataGenerator36(partition['validation'], labels, label_ids)
+    tensorboard = TensorBoard(
+                        log_dir='logs/{}'.format(datetime.datetime.now()),
+                        histogram_freq=0,
+                        write_graph=True,
+                        write_images=True)
 
-# Training
+    model.fit_generator(generator=training_generator,
+                        validation_data=val_generator,
+                        epochs=EPOCHS,
+                        callbacks=[tensorboard],
+                        use_multiprocessing=True,
+                        workers=WORKERS)
 
-tensorboard = TensorBoard(
-                    log_dir='logs/{}'.format(time()),
-                    histogram_freq=0,
-                    write_graph=True,
-                    write_images=True)
+    model.save('trained_models/{}_model_{}_final.h5'.format(
+                                                    MODEL,
+                                                    datetime.datetime.now()))
 
-model.fit_generator(generator=training_generator,
-                    validation_data=val_generator,
-                    epochs=EPOCHS,
-                    callbacks=[tensorboard],
-                    use_multiprocessing=True,
-                    workers=1)
+if MODEL == '18IN3LSTM':
+    ThreeLayerLSTM = ThreeLayerLSTM(L1=L1, L2=L2, L3=L3, t=TIMESTEP,
+                                    num_classes=NUM_CLASSES, data_dim=18)
+    model = ThreeLayerLSTM.build_network()
 
-model.save('trained_model.h5')
+    # Generate training data from .npy file
+    training_generator = DataGenerator18(data_org.partition['Training'],
+                                         data_org.labels, data_org.label_ids,
+                                         batch_size=BATCH_SIZE, t=TIMESTEP,
+                                         n_classes=NUM_CLASSES)
+
+    # Generate validation data from .npy file
+    val_generator = DataGenerator18(data_org.partition['Validation'],
+                                    data_org.labels, data_org.label_ids,
+                                    batch_size=BATCH_SIZE, t=TIMESTEP,
+                                    n_classes=NUM_CLASSES)
+
+    # Training
+
+    tensorboard = TensorBoard(
+                        log_dir='logs/{}'.format(datetime.datetime.now()),
+                        histogram_freq=0,
+                        write_graph=True,
+                        write_images=True)
+
+    model.fit_generator(generator=training_generator,
+                        validation_data=val_generator,
+                        epochs=EPOCHS,
+                        callbacks=[tensorboard],
+                        use_multiprocessing=True,
+                        workers=WORKERS)
+
+    model.save('trained_models/{}_model_{}_final.h5'.format(
+                                                    MODEL,
+                                                    datetime.datetime.now()))

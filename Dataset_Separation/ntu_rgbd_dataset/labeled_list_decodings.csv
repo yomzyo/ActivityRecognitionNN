@@ -1,0 +1,11 @@
+action,id
+Drink_Water,0
+Eat_Meal,1
+Sitting_Down,2
+Standing_Up,3
+Reading,4
+Hand_Waving,5
+Make_Phone_Call,6
+Point_Finger,7
+Falling,8
+Nausea,9

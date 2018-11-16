@@ -219,7 +219,7 @@ class DataGenerator36CNN(keras.utils.Sequence):
             if os.path.exists(image_path):
                 img = cv2.resize(cv2.imread(image_path, 1), (0, 0),
                                  fx=0.25, fy=0.25)
-            spatial[i, ] = img
+                spatial[i, ] = img
             y[i] = self.label_ids[self.labels[video]]
 
         return [temporal, spatial], keras.utils.to_categorical(

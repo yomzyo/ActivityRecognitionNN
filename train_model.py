@@ -15,8 +15,8 @@ L1 = 500
 L2 = 500
 L3 = 500
 WORKERS = 1
-IMG_HEIGHT = 540
-IMG_WIDTH = 960
+IMG_HEIGHT = 270
+IMG_WIDTH = 480
 
 data_org = data_org(dataset=DATASET)
 

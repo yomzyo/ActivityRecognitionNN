@@ -217,7 +217,7 @@ class DataGenerator36CNN(keras.utils.Sequence):
             img = cv2.resize(
                     cv2.imread('datasets/ntu_rgb_dataset_PREP_REAL_TIME/'
                                + video + '/' + video + '.jpg', 1),
-                              (0, 0), fx=0.5, fy=0.5)
+                              (0, 0), fx=0.25, fy=0.25)
             spatial[i, ] = img
             y[i] = self.label_ids[self.labels[video]]
 

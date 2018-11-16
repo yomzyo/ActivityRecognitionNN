@@ -10,7 +10,7 @@ NUM_CLASSES = 10
 BATCH_SIZE = 100
 TIMESTEP = 30
 DATASET = 'ntu_rgbd_dataset'
-MODEL = '36IN3LSTM'
+MODEL = '36IN3LSTMCNN'
 L1 = 500
 L2 = 500
 L3 = 500
@@ -26,7 +26,7 @@ if MODEL == '36IN3LSTMCNN':
                                              data_dim=36,
                                              imgHeight=IMG_HEIGHT,
                                              imgWidth=IMG_WIDTH)
-    model = ThreeLayerLSTM.build_network()
+    model = ThreeLayerLSTMCNN.build_network()
 
     # Generate training data from .npy file
     training_generator = DataGenerator36CNN(data_org.partition['Training'],

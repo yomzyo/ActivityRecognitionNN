@@ -216,7 +216,7 @@ class DataGenerator36CNN(keras.utils.Sequence):
 
             image_path = 'datasets/ntu_rgb_dataset_PREP_REAL_TIME/' + video +\
                 '/' + video + '.jpg'
-            if os.path.exist():
+            if os.path.exist(image_path):
                 img = cv2.resize(cv2.imread(image_path, 1), (0, 0),
                                  fx=0.25, fy=0.25)
             spatial[i, ] = img

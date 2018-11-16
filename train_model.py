@@ -1,19 +1,19 @@
 import numpy as np
 import datetime
-from keras.callbacks import TensorBoard
+from keras.callbacks import TensorBoard, ModelCheckpoint
 from models import ThreeLayerLSTM, ThreeLayerLSTMandCNN
 from DataGenerator import DataGenerator36, DataGenerator18, DataGenerator36CNN
 from data_org import data_org
 
-EPOCHS = 10
+EPOCHS = 100
 NUM_CLASSES = 10
-BATCH_SIZE = 1
+BATCH_SIZE = 100
 TIMESTEP = 30
 DATASET = 'ntu_rgbd_dataset'
-MODEL = '36IN3LSTMCNN'
-L1 = 10
-L2 = 10
-L3 = 10
+MODEL = '36IN3LSTM'
+L1 = 500
+L2 = 500
+L3 = 500
 WORKERS = 1
 IMG_HEIGHT = 540
 IMG_WIDTH = 960
@@ -21,10 +21,11 @@ IMG_WIDTH = 960
 data_org = data_org(dataset=DATASET)
 
 if MODEL == '36IN3LSTMCNN':
-    ThreeLayerLSTM = ThreeLayerLSTMandCNN(L1=L1, L2=L2, L3=L3, t=TIMESTEP,
-                                          num_classes=NUM_CLASSES, data_dim=36,
-                                          imgHeight=IMG_HEIGHT,
-                                          imgWidth=IMG_WIDTH)
+    ThreeLayerLSTMCNN = ThreeLayerLSTMandCNN(L1=L1, L2=L2, L3=L3, t=TIMESTEP,
+                                             num_classes=NUM_CLASSES,
+                                             data_dim=36,
+                                             imgHeight=IMG_HEIGHT,
+                                             imgWidth=IMG_WIDTH)
     model = ThreeLayerLSTM.build_network()
 
     # Generate training data from .npy file
@@ -51,11 +52,18 @@ if MODEL == '36IN3LSTMCNN':
                         histogram_freq=0,
                         write_graph=True,
                         write_images=True)
+    checkpoint = ModelCheckpoint(
+        filepath="trained_models/{}-{}-{}.hdf5".format(
+                                                    MODEL,
+                                                    EPOCHS,
+                                                    datetime.datetime.now()),
+        monitor='val_acc',
+        save_best_only=True)
 
     model.fit_generator(generator=training_generator,
                         validation_data=val_generator,
                         epochs=EPOCHS,
-                        callbacks=[tensorboard],
+                        callbacks=[tensorboard, checkpoint],
                         use_multiprocessing=False,
                         workers=WORKERS)
 
@@ -89,10 +97,18 @@ if MODEL == '36IN3LSTM':
                         write_graph=True,
                         write_images=True)
 
+    checkpoint = ModelCheckpoint(
+        filepath="trained_models/{}-{}-{}.hdf5".format(
+                                                    MODEL,
+                                                    EPOCHS,
+                                                    datetime.datetime.now()),
+        monitor='val_acc',
+        save_best_only=True)
+
     model.fit_generator(generator=training_generator,
                         validation_data=val_generator,
                         epochs=EPOCHS,
-                        callbacks=[tensorboard],
+                        callbacks=[tensorboard, checkpoint],
                         use_multiprocessing=True,
                         workers=WORKERS)
 
@@ -125,10 +141,18 @@ if MODEL == '18IN3LSTM':
                         write_graph=True,
                         write_images=True)
 
+    checkpoint = ModelCheckpoint(
+        filepath="trained_models/{}-{}-{}.hdf5".format(
+                                                    MODEL,
+                                                    EPOCHS,
+                                                    datetime.datetime.now()),
+        monitor='val_acc',
+        save_best_only=True)
+
     model.fit_generator(generator=training_generator,
                         validation_data=val_generator,
                         epochs=EPOCHS,
-                        callbacks=[tensorboard],
+                        callbacks=[tensorboard, checkpoint],
                         use_multiprocessing=True,
                         workers=WORKERS)
 

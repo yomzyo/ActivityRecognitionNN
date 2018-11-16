@@ -120,26 +120,25 @@ class DataGenerator36(keras.utils.Sequence):
         # Generate data
         for i, video in enumerate(list_videos_temp):
             # Store sample
+            for frame_index, frame in enumerate(sorted(os.listdir(
+                        'datasets/ntu_rgb_dataset_PREP_REAL_TIME/' + video))):
+                if '.json' in frame:
+                    json_file = 'datasets/ntu_rgb_dataset_PREP_REAL_TIME/'\
+                                + video + '/' + frame
+                    with open(json_file) as jf:
+                        json_dta = json.load(jf)
+                        for point_index, point in enumerate(
+                                            json_dta['part_candidates'][0]):
+                            value_temp =\
+                                json_dta['part_candidates'][0][str(point)][0:2]
+                            if not value_temp:
+                                value_temp = [0, 0]
 
-            for frame_index, frame in enumerate(sorted(
-                                    os.listdir('datasets/UCF-101json/'
-                                                + self.labels[video]
-                                                + '/' + video))):
-                json_file = 'datasets/UCF-101json/' + self.labels[video] \
-                            + '/' + video + '/' + frame
-                with open(json_file) as jf:
-                    json_data = json.load(jf)
-                    for point_index, point in enumerate(
-                                            json_data['part_candidates'][0]):
-                        value_temp =\
-                            json_data['part_candidates'][0][str(point)][0:2]
-                        if not value_temp:
-                            value_temp = [0, 0]
-
-                        value = [x / 1920 for x in value_temp]
-                        X[i, frame_index, point_index*2, ] = value[0]
-                        X[i, frame_index, point_index*2+1, ] = value[1]
-
+                            value = [x / 1920 for x in value_temp]
+                            X[i, frame_index, point_index*2, ] \
+                                = value[0]
+                            X[i, frame_index, point_index*2+1, ] \
+                                = value[1]
             y[i] = self.label_ids[self.labels[video]]
 
         return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
@@ -194,6 +193,7 @@ class DataGenerator36CNN(keras.utils.Sequence):
         # Generate data
         for i, video in enumerate(list_videos_temp):
             # Store sample
+
             for frame_index, frame in enumerate(sorted(os.listdir(
                         'datasets/ntu_rgb_dataset_PREP_REAL_TIME/' + video))):
                 if '.json' in frame:

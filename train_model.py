@@ -1,16 +1,17 @@
 import numpy as np
-import datetime
+from time import time
 from keras.callbacks import TensorBoard, ModelCheckpoint
 from models import ThreeLayerLSTM, ThreeLayerLSTMandCNN
 from DataGenerator import DataGenerator36, DataGenerator18, DataGenerator36CNN
 from data_org import data_org
+from keras.models import load_model
 
-EPOCHS = 100
+EPOCHS = 500
 NUM_CLASSES = 10
-BATCH_SIZE = 100
+BATCH_SIZE = 32
 TIMESTEP = 30
 DATASET = 'ntu_rgbd_dataset'
-MODEL = '36IN3LSTMCNN'
+MODEL = '36IN3LSTM'
 L1 = 500
 L2 = 500
 L3 = 500
@@ -48,15 +49,13 @@ if MODEL == '36IN3LSTMCNN':
     # Training
 
     tensorboard = TensorBoard(
-                        log_dir='logs/{}'.format(datetime.datetime.now()),
+                        log_dir='logs/{}'.format(time()),
                         histogram_freq=0,
+                        batch_size=BATCH_SIZE,
                         write_graph=True,
                         write_images=True)
     checkpoint = ModelCheckpoint(
-        filepath="trained_models/{}-{}-{}.hdf5".format(
-                                                    MODEL,
-                                                    EPOCHS,
-                                                    datetime.datetime.now()),
+        filepath="trained_models/{}-{}-{}.hdf5".format(MODEL, EPOCHS, time()),
         monitor='val_acc',
         save_best_only=True)
 
@@ -67,15 +66,17 @@ if MODEL == '36IN3LSTMCNN':
                         use_multiprocessing=False,
                         workers=WORKERS)
 
-    model.save('trained_models/{}_model_{}_final.h5'.format(
-                                                    MODEL,
-                                                    datetime.datetime.now()))
+    model.save('trained_models/{}_model_{}_final.h5'.format(MODEL, time()))
 
 
 if MODEL == '36IN3LSTM':
+
     ThreeLayerLSTM = ThreeLayerLSTM(L1=L1, L2=L2, L3=L3, t=TIMESTEP,
                                     num_classes=NUM_CLASSES, data_dim=36)
     model = ThreeLayerLSTM.build_network()
+
+    # model = load_model(
+    #     'trained_models/36IN3LSTM-500-2018-11-20 11:49:55.662198.hdf5')
 
     # Generate training data from .npy file
     training_generator = DataGenerator36(data_org.partition['Training'],
@@ -92,16 +93,13 @@ if MODEL == '36IN3LSTM':
     # Training
 
     tensorboard = TensorBoard(
-                        log_dir='logs/{}'.format(datetime.datetime.now()),
+                        log_dir='logs/{}'.format(time()),
                         histogram_freq=0,
                         write_graph=True,
                         write_images=True)
 
     checkpoint = ModelCheckpoint(
-        filepath="trained_models/{}-{}-{}.hdf5".format(
-                                                    MODEL,
-                                                    EPOCHS,
-                                                    datetime.datetime.now()),
+        filepath="trained_models/{}-{}-{}.hdf5".format(MODEL, EPOCHS, time()),
         monitor='val_acc',
         save_best_only=True)
 
@@ -109,12 +107,10 @@ if MODEL == '36IN3LSTM':
                         validation_data=val_generator,
                         epochs=EPOCHS,
                         callbacks=[tensorboard, checkpoint],
-                        use_multiprocessing=True,
+                        use_multiprocessing=False,
                         workers=WORKERS)
 
-    model.save('trained_models/{}_model_{}_final.h5'.format(
-                                                    MODEL,
-                                                    datetime.datetime.now()))
+    model.save('trained_models/{}_model_{}_final.h5'.format(MODEL, time()))
 
 if MODEL == '18IN3LSTM':
     ThreeLayerLSTM = ThreeLayerLSTM(L1=L1, L2=L2, L3=L3, t=TIMESTEP,
@@ -136,16 +132,13 @@ if MODEL == '18IN3LSTM':
     # Training
 
     tensorboard = TensorBoard(
-                        log_dir='logs/{}'.format(datetime.datetime.now()),
+                        log_dir='logs/{}'.format(time()),
                         histogram_freq=0,
                         write_graph=True,
                         write_images=True)
 
     checkpoint = ModelCheckpoint(
-        filepath="trained_models/{}-{}-{}.hdf5".format(
-                                                    MODEL,
-                                                    EPOCHS,
-                                                    datetime.datetime.now()),
+        filepath="trained_models/{}-{}-{}.hdf5".format(MODEL, EPOCHS, time()),
         monitor='val_acc',
         save_best_only=True)
 
@@ -156,6 +149,4 @@ if MODEL == '18IN3LSTM':
                         use_multiprocessing=True,
                         workers=WORKERS)
 
-    model.save('trained_models/{}_model_{}_final.h5'.format(
-                                                    MODEL,
-                                                    datetime.datetime.now()))
+    model.save('trained_models/{}_model_{}_final.h5'.format(MODEL, time()))

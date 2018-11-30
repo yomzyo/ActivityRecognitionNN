@@ -15,7 +15,7 @@ MODEL = '36IN3LSTM'
 L1 = 500
 L2 = 500
 L3 = 500
-WORKERS = 1
+WORKERS = 16
 IMG_HEIGHT = 270
 IMG_WIDTH = 480
 
@@ -50,7 +50,7 @@ if MODEL == '36IN3LSTMCNN':
 
     tensorboard = TensorBoard(
                         log_dir='logs/{}'.format(time()),
-                        histogram_freq=0,
+                        histogram_freq=2,
                         batch_size=BATCH_SIZE,
                         write_graph=True,
                         write_images=True)
@@ -94,7 +94,7 @@ if MODEL == '36IN3LSTM':
 
     tensorboard = TensorBoard(
                         log_dir='logs/{}'.format(time()),
-                        histogram_freq=0,
+                        histogram_freq=2,
                         write_graph=True,
                         write_images=True)
 
@@ -133,7 +133,7 @@ if MODEL == '18IN3LSTM':
 
     tensorboard = TensorBoard(
                         log_dir='logs/{}'.format(time()),
-                        histogram_freq=0,
+                        histogram_freq=2,
                         write_graph=True,
                         write_images=True)
 

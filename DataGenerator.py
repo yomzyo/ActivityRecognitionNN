@@ -50,30 +50,38 @@ class DataGenerator18(keras.utils.Sequence):
         for i, video in enumerate(list_videos_temp):
             # Store sample
 
-            for frame_index, frame in enumerate(sorted(
-                                    os.listdir('datasets/UCF-101json/'
-                                                + self.labels[video]
-                                                + '/' + video))):
-                json_file = 'datasets/UCF-101json/' + self.labels[video] \
-                            + '/' + video + '/' + frame
-                with open(json_file) as jf:
-                    json_data = json.load(jf)
-                    for point_index, point in enumerate(
+#            for frame_index, frame in enumerate(sorted(
+#                                    os.listdir('datasets/UCF-101json/'
+#                                                + self.labels[video]
+#                                                + '/' + video))):
+#                json_file = 'datasets/UCF-101json/' + self.labels[video] \
+#                            + '/' + video + '/' + frame
+#                with open(json_file) as jf:
+#                    json_data = json.load(jf)
+            for frame_index, frame in enumerate(sorted(os.listdir(
+                        'datasets/ntu_rgb_dataset_PREP_REAL_TIME/' + video))):
+                if '.json' in frame:
+                    json_file = 'datasets/ntu_rgb_dataset_PREP_REAL_TIME/'\
+                                + video + '/' + frame
+                    with open(json_file) as jf:
+                        json_data = json.load(jf)
+                        for point_index, point in enumerate(
                                             json_data['part_candidates'][0]):
-                        value = self._cantor(json_data['part_candidates'][0]
-                                             [str(point)][0:2])[0]
-                        value = value / 100000
-                        X[i, frame_index, point_index, ] = value
+                            value = _cantor(x=json_data['part_candidates']
+                                            [0][str(point)][0:2])[0]
+                            value = value / 2073600
+                            X[i, frame_index, point_index, ] = value
 
             y[i] = self.label_ids[self.labels[video]]
 
         return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
 
-    def _cantor(x):
-        if not x:
-            return [0]
-        else:
-            return [int((((x[0]) + x[1])*x[0] + x[1] + 1)/2 + x[1])]
+
+def _cantor(x):
+    if not x:
+        return [0]
+    else:
+        return [int((((x[0]) + x[1])*x[0] + x[1] + 1)/2 + x[1])]
 
 
 class DataGenerator36(keras.utils.Sequence):

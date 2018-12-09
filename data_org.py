@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 
 class data_org():
@@ -6,10 +7,13 @@ class data_org():
         self.dataset = dataset
         self.partition = {}
         self._generate_partition()
+        # np.save('training.npy', self.partition)
         self.labels = {}
         self._generate_labels()
+        # np.save('labels.npy', self.labels)
         self.label_ids = {}
         self._generate_label_ids()
+        # np.save('label_ids.npy', self.label_ids)
 
     def _generate_partition(self):
         partition_df = pd.read_csv(

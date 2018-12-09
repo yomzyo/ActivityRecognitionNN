@@ -18,11 +18,11 @@ class ThreeLayerLSTM():
         model = Sequential()
         model.add(LSTM(self.L1, return_sequences=True,
                        input_shape=(self.t, self.data_dim),
-                       activation='tanh'))
-        model.add(Dropout(0.3))
-        model.add(LSTM(self.L2, return_sequences=True, activation='tanh'))
-        model.add(Dropout(0.3))
-        model.add(LSTM(self.L3, activation='tanh'))
+                       activation='tanh',
+                       dropout=.4))
+        model.add(LSTM(self.L2, return_sequences=True, activation='tanh',
+                       dropout=.4))
+        model.add(LSTM(self.L3, activation='tanh', dropout=.4))
         model.add(Dense(self.num_classes, activation='softmax'))
         model.compile(loss='categorical_crossentropy',
                       optimizer='Adam',
@@ -48,12 +48,12 @@ class ThreeLayerLSTMandCNN():
         temporal_model = Sequential()
         temporal_model.add(LSTM(self.L1, return_sequences=True,
                            input_shape=(self.t, self.data_dim),
-                           activation='tanh'))
+                           activation='tanh', dropout=.4))
         # model.add(Dropout(0.5))
         temporal_model.add(LSTM(self.L2, return_sequences=True,
-                                activation='tanh'))
+                                activation='tanh', dropout=.4))
         # model.add(Dropout(0.5)
-        temporal_model.add(LSTM(self.L3, activation='tanh'))
+        temporal_model.add(LSTM(self.L3, activation='tanh', dropout=.4))
 
         # Skeleton sequence output
         temporal_input = Input(shape=(self.t, self.data_dim))

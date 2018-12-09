@@ -1,29 +1,54 @@
 import numpy as np
-from time import time
-from keras.callbacks import TensorBoard
+from DataGenerator import DataGenerator36
+from data_org import data_org
 from keras.models import load_model
-from models import ThreeLayerLSTM
-import os
-from DataGenerator import DataGenerator18, DataGenerator36
-
-dataset_folder = 'Dataset_Separation/UCF-101json'
-
-partition = {}
-labels = {}
-label_ids = {}
-for type in os.listdir(dataset_folder):
-    partition[type] = []
-    for i, activity in enumerate(os.listdir(dataset_folder + '/' + type)):
-        label_ids[activity] = i
-        for video in os.listdir(dataset_folder + '/' + type + '/' + activity):
-            partition[type].append(video)
-            labels[video] = activity
-
-model = load_model('2nd_trained_model.h5')
 
 # Generate training data from .npy file
-testing_generator = DataGenerator36(partition['test'], labels, label_ids)
 
-model.evaluate_generator(testing_generator,
-                         workers=16,
-                         use_multiprocessing=True)
+data_org = data_org(dataset='ntu_rgbd_dataset')
+
+training_generator = DataGenerator36(data_org.partition['Training'],
+                                     data_org.labels, data_org.label_ids,
+                                     batch_size=1, t=30,
+                                     n_classes=10)
+
+correct = 0
+total = 0
+
+model = load_model(
+    'comeplete/trained_models/36IN_LSTM500EPOCHS_V2/36IN3LSTM-500-1544224618.4687705.hdf5')
+'''
+for i in range(1020):
+    batch = training_generator.__getitem__(i)
+    video = batch[0]
+    label = batch[1][0]
+
+    output = model.predict(np.array(video), batch_size=1)
+    output = [np.round(elem, 1) for elem in output][0]
+
+    print('Label: ', label)
+
+    for action, id in data_org.label_ids.items():
+        if id == np.argmax(label):
+            print(id, ' ', action)
+
+    print('Output: ', output)
+    max = np.argmax(output)
+    for action, id in data_org.label_ids.items():
+        if id == max:
+            print(id, ' ', action)
+
+    total += 1
+    if np.argmax(label) == max:
+        correct += 1
+
+    print('\n')
+
+print('Total: ', total)
+print('Correct: ', correct)
+print('Accuracy: ', correct/total)
+'''
+
+score = model.evaluate_generator(training_generator, steps=1020, verbose=1)
+print(model.metrics_names)
+print(score)

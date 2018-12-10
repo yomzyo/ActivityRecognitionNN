@@ -4,7 +4,8 @@ from keras.callbacks import TensorBoard, ModelCheckpoint
 from models import ThreeLayerLSTM, ThreeLayerLSTMandCNN
 from DataGenerator import DataGenerator36, DataGenerator18, DataGenerator36CNN
 from data_org import data_org
-
+from make_keras_picklable import make_keras_picklable
+import pickle
 
 EPOCHS = 10
 NUM_CLASSES = 10
@@ -19,6 +20,7 @@ WORKERS = 16
 IMG_HEIGHT = 270
 IMG_WIDTH = 480
 
+make_keras_picklable()
 data_org = data_org(dataset=DATASET)
 
 if MODEL == '36IN3LSTMCNN':
@@ -93,7 +95,7 @@ if MODEL == '36IN3LSTM':
 
     tensorboard = TensorBoard(
                         log_dir='logs/{}'.format(time()),
-                        histogram_freq=2,
+                        histogram_freq=0,
                         write_graph=True,
                         write_images=True)
 
@@ -109,11 +111,13 @@ if MODEL == '36IN3LSTM':
                         # callbacks=[tensorboard, checkpoint],
                         use_multiprocessing=False,
                         workers=WORKERS)
-
+    '''
     model.save_weights(
         'trained_models/{}_model_{}_weights.h5'.format(MODEL, time()))
     with open('trained_models/{}_model_{}_architecture.json'.format(MODEL, time()),'w') as f:
         f.write(model.to_json())
+    ''''
+    pickle.dumps(model)
 
     testing_generator = DataGenerator36(data_org.partition['Test'],
                                         data_org.labels, data_org.label_ids,
@@ -137,24 +141,6 @@ if MODEL == '36IN3LSTM':
     print('Total: ', total)
     print('Correct: ', correct)
     print('Accuracy: ', correct/total)
-    total = 0
-    correct = 0
-    for i in range(1020):
-        batch = training_generator.__getitem__(i)
-        video = batch[0]
-        label = batch[1][0]
-
-        output = model.predict(np.array(video), batch_size=1)
-        output = [np.round(elem, 1) for elem in output][0]
-
-        max = np.argmax(output)
-        total += 1
-        if np.argmax(label) == max:
-            correct += 1
-
-    print('Training_Total: ', total)
-    print('Training_Correct: ', correct)
-    print('Training_Accuracy: ', correct/total)
 
 
 if MODEL == '18IN3LSTM':

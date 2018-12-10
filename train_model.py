@@ -107,12 +107,14 @@ if MODEL == '36IN3LSTM':
     model.fit_generator(generator=training_generator,
                         validation_data=val_generator,
                         epochs=EPOCHS,
-                        callbacks=[tensorboard, checkpoint],
+                        callbacks=[tensorboard],
                         # callbacks=[tensorboard, checkpoint],
                         use_multiprocessing=False,
                         workers=WORKERS)
 
-    pickle.dumps(model)
+    pickling_on = open("model.pickle", "wb")
+    pickle.dump(model, pickling_on)
+    pickling_on.close()
 
     testing_generator = DataGenerator36(data_org.partition['Test'],
                                         data_org.labels, data_org.label_ids,

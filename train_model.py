@@ -6,7 +6,7 @@ from DataGenerator import DataGenerator36, DataGenerator18, DataGenerator36CNN
 from data_org import data_org
 
 
-EPOCHS = 200
+EPOCHS = 10
 NUM_CLASSES = 10
 BATCH_SIZE = 32
 TIMESTEP = 30
@@ -70,7 +70,6 @@ if MODEL == '36IN3LSTMCNN':
 
 
 if MODEL == '36IN3LSTM':
-
     ThreeLayerLSTM = ThreeLayerLSTM(L1=L1, L2=L2, L3=L3, t=TIMESTEP,
                                     num_classes=NUM_CLASSES, data_dim=36)
     model = ThreeLayerLSTM.build_network()
@@ -107,10 +106,14 @@ if MODEL == '36IN3LSTM':
                         validation_data=val_generator,
                         epochs=EPOCHS,
                         callbacks=[tensorboard, checkpoint],
+                        # callbacks=[tensorboard, checkpoint],
                         use_multiprocessing=False,
                         workers=WORKERS)
 
-    model.save('trained_models/{}_model_{}_final.h5'.format(MODEL, time()))
+    model.save_weights(
+        'trained_models/{}_model_{}_weights.h5'.format(MODEL, time()))
+    with open('trained_models/{}_model_{}_architecture.json'.format(MODEL, time()),'w') as f:
+        f.write(model.to_json())
 
     testing_generator = DataGenerator36(data_org.partition['Test'],
                                         data_org.labels, data_org.label_ids,
@@ -126,23 +129,10 @@ if MODEL == '36IN3LSTM':
         output = model.predict(np.array(video), batch_size=1)
         output = [np.round(elem, 1) for elem in output][0]
 
-        print('Label: ', label)
-
-        for action, id in data_org.label_ids.items():
-            if id == np.argmax(label):
-                print(id, ' ', action)
-
-        print('Output: ', output)
         max = np.argmax(output)
-        for action, id in data_org.label_ids.items():
-            if id == max:
-                print(id, ' ', action)
-
         total += 1
         if np.argmax(label) == max:
             correct += 1
-
-        print('\n')
 
     print('Total: ', total)
     print('Correct: ', correct)

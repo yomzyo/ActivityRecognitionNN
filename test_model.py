@@ -17,7 +17,7 @@ total = 0
 
 model = load_model(
     'comeplete/trained_models/36IN_LSTM500EPOCHS_V2/36IN3LSTM-500-1544224618.4687705.hdf5')
-'''
+
 for i in range(1020):
     batch = training_generator.__getitem__(i)
     video = batch[0]
@@ -47,8 +47,9 @@ for i in range(1020):
 print('Total: ', total)
 print('Correct: ', correct)
 print('Accuracy: ', correct/total)
-'''
 
+'''
 score = model.evaluate_generator(training_generator, steps=1020, verbose=1)
 print(model.metrics_names)
 print(score)
+'''

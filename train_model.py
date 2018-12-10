@@ -111,12 +111,7 @@ if MODEL == '36IN3LSTM':
                         # callbacks=[tensorboard, checkpoint],
                         use_multiprocessing=False,
                         workers=WORKERS)
-    '''
-    model.save_weights(
-        'trained_models/{}_model_{}_weights.h5'.format(MODEL, time()))
-    with open('trained_models/{}_model_{}_architecture.json'.format(MODEL, time()),'w') as f:
-        f.write(model.to_json())
-    ''''
+
     pickle.dumps(model)
 
     testing_generator = DataGenerator36(data_org.partition['Test'],

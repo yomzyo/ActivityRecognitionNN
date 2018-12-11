@@ -111,10 +111,13 @@ if MODEL == '36IN3LSTM':
                         # callbacks=[tensorboard, checkpoint],
                         use_multiprocessing=False,
                         workers=WORKERS)
-
+    '''
     pickling_on = open("model.pickle", "wb")
     pickle.dump(model, pickling_on)
     pickling_on.close()
+    '''
+    pickle_out = open("dict.pickle", "wb")
+    pickle.dump(model, pickle_out)
 
     testing_generator = DataGenerator36(data_org.partition['Test'],
                                         data_org.labels, data_org.label_ids,

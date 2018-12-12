@@ -4,8 +4,7 @@ from keras.callbacks import TensorBoard, ModelCheckpoint
 from models import ThreeLayerLSTM, ThreeLayerLSTMandCNN
 from DataGenerator import DataGenerator36, DataGenerator18, DataGenerator36CNN
 from data_org import data_org
-from make_keras_picklable import make_keras_picklable
-import pickle
+# from make_keras_picklable import make_keras_picklable
 
 EPOCHS = 10
 NUM_CLASSES = 10
@@ -20,7 +19,7 @@ WORKERS = 16
 IMG_HEIGHT = 270
 IMG_WIDTH = 480
 
-make_keras_picklable()
+# make_keras_picklable()
 data_org = data_org(dataset=DATASET)
 
 if MODEL == '36IN3LSTMCNN':
@@ -56,18 +55,43 @@ if MODEL == '36IN3LSTMCNN':
                         batch_size=BATCH_SIZE,
                         write_graph=True,
                         write_images=True)
-    checkpoint = ModelCheckpoint(
-        filepath="trained_models/{}-{}-{}.hdf5".format(MODEL, EPOCHS, time()),
+    checkpoint_acc = ModelCheckpoint(
+        filepath="trained_models/{}-{}-{}_maxACC.hdf5".format(MODEL, EPOCHS, time()),
         monitor='val_acc',
+        save_best_only=True)
+    checkpoint_loss = ModelCheckpoint(
+        filepath="trained_models/{}-{}-{}._minLosshdf5".format(MODEL, EPOCHS, time()),
+        monitor='val_loss',
         save_best_only=True)
 
     model.fit_generator(generator=training_generator,
                         validation_data=val_generator,
                         epochs=EPOCHS,
-                        callbacks=[tensorboard, checkpoint],
+                        callbacks=[tensorboard, checkpoint_acc, checkpoint_loss],
                         use_multiprocessing=False,
                         workers=WORKERS)
+    testing_generator = DataGenerator36CNN(data_org.partition['Test'],
+                                           data_org.labels, data_org.label_ids,
+                                           batch_size=1, t=30,
+                                           n_classes=10)
+    total = 0
+    correct = 0
+    for i in range(1020):
+        batch = testing_generator.__getitem__(i)
+        video = batch[0]
+        label = batch[1][0]
 
+        output = model.predict(np.array(video), batch_size=1)
+        output = [np.round(elem, 1) for elem in output][0]
+
+        max = np.argmax(output)
+        total += 1
+        if np.argmax(label) == max:
+            correct += 1
+
+    print('Total: ', total)
+    print('Correct: ', correct)
+    print('Accuracy: ', correct/total)
     model.save('trained_models/{}_model_{}_final.h5'.format(MODEL, time()))
 
 
@@ -99,25 +123,22 @@ if MODEL == '36IN3LSTM':
                         write_graph=True,
                         write_images=True)
 
-    checkpoint = ModelCheckpoint(
-        filepath="trained_models/{}-{}-{}.hdf5".format(MODEL, EPOCHS, time()),
+    checkpoint_acc = ModelCheckpoint(
+        filepath="trained_models/{}-{}-{}_maxACC.hdf5".format(MODEL, EPOCHS, time()),
         monitor='val_acc',
+        save_best_only=True)
+    checkpoint_loss = ModelCheckpoint(
+        filepath="trained_models/{}-{}-{}._minLosshdf5".format(MODEL, EPOCHS, time()),
+        monitor='val_loss',
         save_best_only=True)
 
     model.fit_generator(generator=training_generator,
                         validation_data=val_generator,
                         epochs=EPOCHS,
-                        callbacks=[tensorboard],
-                        # callbacks=[tensorboard, checkpoint],
+                        # callbacks=[tensorboard],
+                        callbacks=[tensorboard, checkpoint_acc, checkpoint_loss],
                         use_multiprocessing=False,
                         workers=WORKERS)
-    '''
-    pickling_on = open("model.pickle", "wb")
-    pickle.dump(model, pickling_on)
-    pickling_on.close()
-    '''
-    pickle_out = open("dict.pickle", "wb")
-    pickle.dump(model, pickle_out)
 
     testing_generator = DataGenerator36(data_org.partition['Test'],
                                         data_org.labels, data_org.label_ids,
@@ -168,16 +189,42 @@ if MODEL == '18IN3LSTM':
                         write_graph=True,
                         write_images=True)
 
-    checkpoint = ModelCheckpoint(
-        filepath="trained_models/{}-{}-{}.hdf5".format(MODEL, EPOCHS, time()),
+    checkpoint_acc = ModelCheckpoint(
+        filepath="trained_models/{}-{}-{}_maxACC.hdf5".format(MODEL, EPOCHS, time()),
         monitor='val_acc',
+        save_best_only=True)
+    checkpoint_loss = ModelCheckpoint(
+        filepath="trained_models/{}-{}-{}._minLosshdf5".format(MODEL, EPOCHS, time()),
+        monitor='val_loss',
         save_best_only=True)
 
     model.fit_generator(generator=training_generator,
                         validation_data=val_generator,
                         epochs=EPOCHS,
-                        callbacks=[tensorboard, checkpoint],
+                        callbacks=[tensorboard, checkpoint_acc, checkpoint_loss],
                         use_multiprocessing=True,
                         workers=WORKERS)
+    testing_generator = DataGenerator18(data_org.partition['Test'],
+                                        data_org.labels, data_org.label_ids,
+                                        batch_size=1, t=30,
+                                        n_classes=10)
+    total = 0
+    correct = 0
+    for i in range(1020):
+        batch = testing_generator.__getitem__(i)
+        video = batch[0]
+        label = batch[1][0]
+
+        output = model.predict(np.array(video), batch_size=1)
+        output = [np.round(elem, 1) for elem in output][0]
+
+        max = np.argmax(output)
+        total += 1
+        if np.argmax(label) == max:
+            correct += 1
+
+    print('Total: ', total)
+    print('Correct: ', correct)
+    print('Accuracy: ', correct/total)
 
     model.save('trained_models/{}_model_{}_final.h5'.format(MODEL, time()))

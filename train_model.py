@@ -135,8 +135,8 @@ if MODEL == '36IN3LSTM':
     model.fit_generator(generator=training_generator,
                         validation_data=val_generator,
                         epochs=EPOCHS,
-                        # callbacks=[tensorboard],
-                        callbacks=[tensorboard, checkpoint_acc, checkpoint_loss],
+                        callbacks=[tensorboard],
+                        # callbacks=[tensorboard, checkpoint_acc, checkpoint_loss],
                         use_multiprocessing=False,
                         workers=WORKERS)
 
@@ -162,7 +162,7 @@ if MODEL == '36IN3LSTM':
     print('Total: ', total)
     print('Correct: ', correct)
     print('Accuracy: ', correct/total)
-
+    model.save('trained_models/{}_model_{}_final.h5'.format(MODEL, time()))
 
 if MODEL == '18IN3LSTM':
     ThreeLayerLSTM = ThreeLayerLSTM(L1=L1, L2=L2, L3=L3, t=TIMESTEP,

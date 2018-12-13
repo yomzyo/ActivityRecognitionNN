@@ -6,12 +6,12 @@ from DataGenerator import DataGenerator36, DataGenerator18, DataGenerator36CNN
 from data_org import data_org
 # from make_keras_picklable import make_keras_picklable
 
-EPOCHS = 10
+EPOCHS = 5
 NUM_CLASSES = 10
 BATCH_SIZE = 32
 TIMESTEP = 30
 DATASET = 'ntu_rgbd_dataset'
-MODEL = '36IN3LSTM'
+MODEL = '36IN3LSTMCNN'
 L1 = 500
 L2 = 500
 L3 = 500
@@ -51,7 +51,7 @@ if MODEL == '36IN3LSTMCNN':
 
     tensorboard = TensorBoard(
                         log_dir='logs/{}'.format(time()),
-                        histogram_freq=2,
+                        histogram_freq=0,
                         batch_size=BATCH_SIZE,
                         write_graph=True,
                         write_images=True)
@@ -202,9 +202,10 @@ if MODEL == '18IN3LSTM':
                         validation_data=val_generator,
                         epochs=EPOCHS,
                         callbacks=[tensorboard, checkpoint_acc, checkpoint_loss],
-                        use_multiprocessing=True,
+                        use_multiprocessing=False,
                         workers=WORKERS)
-    testing_generator = DataGenerator18(data_org.partition['Test'],
+
+    testing_generator = DataGenerator36DataGenerator18(data_org.partition['Test'],
                                         data_org.labels, data_org.label_ids,
                                         batch_size=1, t=30,
                                         n_classes=10)

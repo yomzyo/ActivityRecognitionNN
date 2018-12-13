@@ -1,5 +1,5 @@
 from keras.models import Sequential, Model
-from keras.layers import LSTM, Dense, Dropout, Input, Embedding
+from keras.layers import LSTM, Dense, Dropout, Input
 from keras.layers import Conv2D, MaxPooling2D, Flatten
 from keras.layers import concatenate
 
@@ -56,6 +56,7 @@ class ThreeLayerLSTMandCNN():
         temporal_model.add(LSTM(self.L3, activation='tanh', dropout=.4))
 
         # Skeleton sequence output
+
         temporal_input = Input(shape=(self.t, self.data_dim))
         encoded_temp = temporal_model(temporal_input)
 

@@ -49,7 +49,6 @@ class DataGenerator18(keras.utils.Sequence):
         # Generate data
         for i, video in enumerate(list_videos_temp):
             # Store sample
-
 #            for frame_index, frame in enumerate(sorted(
 #                                    os.listdir('datasets/UCF-101json/'
 #                                                + self.labels[video]

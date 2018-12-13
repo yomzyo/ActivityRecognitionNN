@@ -3,7 +3,6 @@ from DataGenerator import DataGenerator36
 from data_org import data_org
 from keras.models import load_model
 
-
 data_org = data_org(dataset='ntu_rgbd_dataset')
 
 testing_generator = DataGenerator36(data_org.partition['Test'],
@@ -41,7 +40,6 @@ for i in range(1020):
     if np.argmax(label) == max:
         correct += 1
 
-    print(i, '/1020')
     print('\n')
 
 print('Total: ', total)

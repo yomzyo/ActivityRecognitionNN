@@ -10,8 +10,6 @@ import keras.models
 import keras
 import pickle
 
-make_keras_picklable()
-
 def make_keras_picklable():
     def __getstate__(self):
         model_str = ""
@@ -32,6 +30,8 @@ def make_keras_picklable():
     cls.__getstate__ = __getstate__
     cls.__setstate__ = __setstate__
 
+
+make_keras_picklable()
 
 EPOCHS = 10
 NUM_CLASSES = 10

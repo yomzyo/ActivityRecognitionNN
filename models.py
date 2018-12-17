@@ -54,6 +54,7 @@ class ThreeLayerLSTMandCNN():
                                 activation='tanh', dropout=.4))
         # model.add(Dropout(0.5)
         temporal_model.add(LSTM(self.L3, activation='tanh', dropout=.4))
+        temporal_model.add(Dense(100))
 
         # Skeleton sequence output
 
@@ -74,6 +75,7 @@ class ThreeLayerLSTMandCNN():
         spat_model.add(Conv2D(256, (3, 3), activation='relu'))
         spat_model.add(MaxPooling2D(2, 2))
         spat_model.add(Flatten())
+        spat_model.add(Dense(100))
 
         spat_input = Input(shape=(self.imgHeight, self.imgWidth, 3))
         encoded_spat = spat_model(spat_input)

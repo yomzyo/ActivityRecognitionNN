@@ -10,6 +10,7 @@ import keras.models
 import keras
 import pickle
 
+
 def make_keras_picklable():
     def __getstate__(self):
         model_str = ""

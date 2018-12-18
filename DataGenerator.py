@@ -148,6 +148,8 @@ class DataGenerator36(keras.utils.Sequence):
                                 = value[1]
             y[i] = self.label_ids[self.labels[video]]
 
+        print(y)
+        print(keras.utils.to_categorical(y, num_classes=self.n_classes))
         return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
 
 
@@ -226,7 +228,8 @@ class DataGenerator36CNN(keras.utils.Sequence):
             if os.path.exists(image_path):
                 img = cv2.resize(cv2.imread(image_path, 1), (0, 0),
                                  fx=0.25, fy=0.25)
-                spatial[i, ] = img
+                temp_img = [[[float(v)/255 for v in c] for c in r] for r in img]
+                spatial[i, ] = temp_img
             y[i] = self.label_ids[self.labels[video]]
 
         return [temporal, spatial], keras.utils.to_categorical(

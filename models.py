@@ -2,6 +2,7 @@ from keras.models import Sequential, Model
 from keras.layers import LSTM, Dense, Dropout, Input
 from keras.layers import Conv2D, MaxPooling2D, Flatten
 from keras.layers import concatenate
+from keras import optimizers
 
 
 class ThreeLayerLSTM():
@@ -84,7 +85,8 @@ class ThreeLayerLSTMandCNN():
 
         output = Dense(self.num_classes, activation='softmax')(merged)
         model = Model(inputs=[temporal_input, spat_input], outputs=output)
+        adam = optimizers.adam(lr=0.00001)
         model.compile(loss='categorical_crossentropy',
-                      optimizer='Adam',
+                      optimizer=adam,
                       metrics=['accuracy'])
         return model

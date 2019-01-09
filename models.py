@@ -2,6 +2,7 @@ from keras.models import Sequential, Model
 from keras.layers import LSTM, Dense, Dropout, Input
 from keras.layers import Conv2D, MaxPooling2D, Flatten
 from keras.layers import concatenate
+from keras.layers import BatchNormalization
 from keras import optimizers
 
 
@@ -56,6 +57,7 @@ class ThreeLayerLSTMandCNN():
         # model.add(Dropout(0.5)
         temporal_model.add(LSTM(self.L3, activation='tanh', dropout=.4))
         temporal_model.add(Dense(100))
+        temporal_model.add(BatchNormalization())
 
         # Skeleton sequence output
 
@@ -77,6 +79,7 @@ class ThreeLayerLSTMandCNN():
         spat_model.add(MaxPooling2D(2, 2))
         spat_model.add(Flatten())
         spat_model.add(Dense(100))
+        spat_model.add(BatchNormalization())
 
         spat_input = Input(shape=(self.imgHeight, self.imgWidth, 3))
         encoded_spat = spat_model(spat_input)

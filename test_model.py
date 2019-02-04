@@ -10,11 +10,11 @@ testing_generator = DataGenerator36(data_org.partition['Test'],
                                     batch_size=1, t=30,
                                     n_classes=10)
 
-correct = 0
-total = 0
+correct = 0.0
+total = 0.0
 
 model = load_model(
-    'comeplete/trained_models/36IN_LSTM500EPOCHS_V2/36IN3LSTM-500-1544224618.4687705.hdf5')
+    'trained_models/36IN3LSTM-10-1548292561.2_maxACC.hdf5')
 
 for i in range(1020):
     batch = testing_generator.__getitem__(i)

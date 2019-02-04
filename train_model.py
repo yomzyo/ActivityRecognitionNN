@@ -6,16 +6,16 @@ from DataGenerator import DataGenerator36, DataGenerator18, DataGenerator36CNN
 from data_org import data_org
 # from make_keras_picklable import make_keras_picklable
 
-EPOCHS = 5
+EPOCHS = 10
 NUM_CLASSES = 10
 BATCH_SIZE = 32
 TIMESTEP = 30
 DATASET = 'ntu_rgbd_dataset'
-MODEL = '36IN3LSTMCNN'
+MODEL = '36IN3LSTM'
 L1 = 500
 L2 = 500
 L3 = 500
-WORKERS = 16
+WORKERS = 1
 IMG_HEIGHT = 270
 IMG_WIDTH = 480
 
@@ -135,8 +135,8 @@ if MODEL == '36IN3LSTM':
     model.fit_generator(generator=training_generator,
                         validation_data=val_generator,
                         epochs=EPOCHS,
-                        callbacks=[tensorboard],
-                        # callbacks=[tensorboard, checkpoint_acc, checkpoint_loss],
+                        # callbacks=[tensorboard],
+                        callbacks=[tensorboard, checkpoint_acc, checkpoint_loss],
                         use_multiprocessing=False,
                         workers=WORKERS)
 
@@ -144,8 +144,8 @@ if MODEL == '36IN3LSTM':
                                         data_org.labels, data_org.label_ids,
                                         batch_size=1, t=30,
                                         n_classes=10)
-    total = 0
-    correct = 0
+    total = 0.0
+    correct = 0.0
     for i in range(1020):
         batch = testing_generator.__getitem__(i)
         video = batch[0]

@@ -141,15 +141,15 @@ class DataGenerator36(keras.utils.Sequence):
                             if not value_temp:
                                 value_temp = [0, 0]
 
-                            value = [x / 1920 for x in value_temp]
+                            value = [x / 1920.0 for x in value_temp]
                             X[i, frame_index, point_index*2, ] \
                                 = value[0]
                             X[i, frame_index, point_index*2+1, ] \
                                 = value[1]
             y[i] = self.label_ids[self.labels[video]]
 
-        print(y)
-        print(keras.utils.to_categorical(y, num_classes=self.n_classes))
+        # print(y)
+        # print(keras.utils.to_categorical(y, num_classes=self.n_classes))
         return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
 
 

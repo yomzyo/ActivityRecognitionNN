@@ -13,7 +13,7 @@ matplotlib==2.2.2
 numpy==1.15.0
 pandas==0.23.3
 Pillow==5.2.0
-protobuf==3.6.0
+protobuf==3.18.3
 pydot==1.2.4
 pyparsing==2.2.0
 python-dateutil==2.7.3
